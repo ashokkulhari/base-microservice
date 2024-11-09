@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authservice
+  template:
+    metadata:
+      labels:
+        app: authservice
+    spec:
+      containers:
+      - name: authservice
+        image: authservice:latest
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 1112
+        env:
+          - name: SPRING_APPLICATION_NAME
+            value: authservice
+          - name: SPRING_PROFILES_ACTIVE
+            value: kubernetes
+          - name: SPRING_CLOUD_KUBERNETES_DISCOVERY_DISCOVERY_SERVER_URL
+            value: http://spring-cloud-kubernetes-discoveryserver:80
+          - name: SPRING_CLOUD_KUBERNETES_CONFIG_SSL_SKIP_SSL_VALIDATION
+            value: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authservice
+spec:
+  selector:
+    app: authservice
+  ports:
+    - protocol: TCP
+      port: 1112
+      targetPort: 1112

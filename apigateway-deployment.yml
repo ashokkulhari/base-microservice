@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apigateway
+  template:
+    metadata:
+      labels:
+        app: apigateway
+    spec:
+      containers:
+      - name: apigateway
+        image: apigateway:latest
+        imagePullPolicy: Never 
+        ports:
+          - containerPort: 1110
+        env:
+          - name: SPRING_APPLICATION_NAME
+            value: apigateway
+          - name: SPRING_PROFILES_ACTIVE
+            value: kubernetes
+          - name: SPRING_CLOUD_KUBERNETES_DISCOVERY_DISCOVERY_SERVER_URL
+            value: http://spring-cloud-kubernetes-discoveryserver:80
+          - name: SPRING_CLOUD_KUBERNETES_CONFIG_SSL_SKIP_SSL_VALIDATION
+            value: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigateway
+spec:   
+  type: NodePort
+  selector:
+    app: apigateway
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 1110
+      nodePort: 30006

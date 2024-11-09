@@ -1,0 +1,17 @@
+docker build -t apigateway .
+
+docker build -t kubedemo:latest .
+
+minikube image load kubedemo:latest
+
+
+kubectl rollout restart deployment userservice
+kubectl exec -it <mysql-pod-name> -- mysql -u root -p
+
+SELECT user, host FROM mysql.user WHERE user = 'admin';
+
+
+
+CREATE USER 'admin'@'%' IDENTIFIED BY 'admin';
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%';
+FLUSH PRIVILEGES;

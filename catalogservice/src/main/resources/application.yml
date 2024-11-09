@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: catalog-service
+
+  config:
+    import: optional:file:.env[.properties]
+  data:
+    mongodb:
+      uri: mongodb://admin:password@192.168.1.2:27017
+      database: catalog-db
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
+
+server:
+  port: 2111
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.access.ExceptionTranslationFilter: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.authentication: DEBUG
+    org.springframework.security.web.access.intercept.FilterSecurityInterceptor: DEBUG
+    org.springframework.security.access.intercept.AbstractSecurityInterceptor: DEBUG

@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eureka-cm
+data:
+  eureka_service_address: http://eurekaserver:8761/eureka
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eurekaserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eurekaserver
+  template:
+    metadata:
+      labels:
+        app: eurekaserver
+    spec:
+      containers:
+      - name: eurekaserver
+        image: eurekaserver:latest
+        imagePullPolicy: Never 
+        ports:
+          - containerPort: 8761
+        env:
+          - name: SPRING_APPLICATION_NAME
+            value: eurekaserver
+          - name: EUREKA_INSTANCE_HOSTNAME
+            value: eurekaserver
+          - name: EUREKA_CLIENT_REGISTER_WITH_EUREKA
+            value: "false"
+          - name: EUREKA_CLIENT_FETCH_REGISTRY
+            value: "false"
+          - name: EUREKA_SERVER_ADDRESS
+            valueFrom:
+              configMapKeyRef:
+                name: eureka-cm
+                key: eureka_service_address
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eurekaserver
+spec:
+  selector:
+    app: eurekaserver
+    
+  ports:
+    - protocol: TCP
+      port: 8761
+      targetPort: 8761

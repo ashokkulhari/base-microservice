@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productservice
+  template:
+    metadata:
+      labels:
+        app: productservice
+    spec:
+      containers:
+      - name: productservice
+        image: productservice:latest
+        ports:
+          - containerPort: 1111
+        env:
+          - name: SPRING_APPLICATION_NAME
+            value: productservice
+          - name: EUREKA_SERVICE_URL
+            value: http://eurekaserver:8761/eureka/
+          - name: SPRING_DATASOURCE_URL
+            value: jdbc:mysql://database:3306/product-db
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: database-secret
+                key: database-username
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: database-secret
+                key: database-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: productservice
+spec:
+  selector:
+    app: productservice
+  ports:
+    - protocol: TCP
+      port: 1111
+      targetPort: 1111

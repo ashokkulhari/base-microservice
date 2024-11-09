@@ -1,0 +1,76 @@
+server:
+  port: 1110
+
+spring:
+  application:
+    name: apigateway
+  profiles:
+    active: local
+  config:
+    import: optional:file:.env[.properties]
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      httpclient:
+        connect-timeout: 60000
+        response-timeout: 60s
+
+      routes:
+        - id: productservice
+          uri: lb://productservice
+          predicates:
+            - Path=/api/v1/products/**
+
+        - id: catalogservice
+          uri: lb://catalogservice
+          predicates:
+            - Path=/api/v1/catalogs/**
+
+        - id: authservice
+          uri: lb://authservice
+          predicates:
+            - Path=/api/v1/authentication/**
+
+        - id: userservice
+          uri: lb://userservice
+          predicates:
+            - Path=/api/v1/users/**
+---
+spring:
+  config:
+    activate:
+      on-profile: "local"
+  cloud:
+    discovery:
+      client:
+        simple: false
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
+---
+spring:
+  config:
+    activate:
+      on-profile: "kubernetes"
+  cloud:
+    discovery:
+      client:
+        simple: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.access.ExceptionTranslationFilter: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.authentication: DEBUG
+    org.springframework.security.web.access.intercept.FilterSecurityInterceptor: DEBUG
+    org.springframework.security.access.intercept.AbstractSecurityInterceptor: DEBUG
+    com.netflix.loadbalancer: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
+
+    com.ic.apigateway: DEBUG
+  pattern:
+        level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userservice
+  template:
+    metadata:
+      labels:
+        app: userservice
+    spec:
+      containers:
+      - name: userservice
+        image: userservice:latest
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 1113
+        env:
+          - name: SPRING_APPLICATION_NAME
+            value: userservice
+          - name: SPRING_PROFILES_ACTIVE
+            value: kubernetes
+          - name: SPRING_CLOUD_KUBERNETES_DISCOVERY_DISCOVERY_SERVER_URL
+            value: http://spring-cloud-kubernetes-discoveryserver:80
+          - name: SPRING_CLOUD_KUBERNETES_CONFIG_SSL_SKIP_SSL_VALIDATION
+            value: "true"
+          - name: SPRING_DATASOURCE_URL
+            value: jdbc:mysql://database:3306/user_db
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: database-secret
+                key: database-username
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: database-secret
+                key: database-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: userservice
+spec:
+  type: ClusterIP
+  selector:
+    app: userservice
+  ports:
+    - protocol: TCP
+      port: 1113
+      targetPort: 1113
