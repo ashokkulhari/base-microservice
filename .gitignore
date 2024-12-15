@@ -69,3 +69,9 @@ catalogservice/mvnw.cmd
 productservice/mvnw.cmd
 user-service/mvnw.cmd
 service-discovery/mvnw.cmd
+
+common/mvnw.cmd
+common/mvnw
+common/.mvn
+common/.idea
+common/target/
