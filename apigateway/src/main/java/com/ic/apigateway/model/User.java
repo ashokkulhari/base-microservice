@@ -1,4 +1,4 @@
-package com.ic.authservice.model;
+package com.ic.apigateway.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

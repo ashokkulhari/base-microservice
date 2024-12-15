@@ -1,4 +1,4 @@
-package com.ic.authservice.model.common.mapper;
+package com.ic.common.models.common.mapper;
 
 import java.util.Collection;
 import java.util.List;

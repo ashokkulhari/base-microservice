@@ -1,0 +1,21 @@
+spring:
+  cloud:
+    kubernetes:
+      config:
+        trust-store: /home/application/microservice/ca.crt
+        trust-store-password: changeit
+      enabled: true
+    discovery:
+      client:
+        config:
+          enabled: true
+      ribbon:
+        enabled: true
+  datasource:
+    name: mysql
+    url: jdbc:mysql://database:3306/product-db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: admin
+    password: admin
+eureka:
+  client:
+    enabled: false

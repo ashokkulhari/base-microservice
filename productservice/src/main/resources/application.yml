@@ -1,6 +1,11 @@
+server:
+  port: 1111
+
 spring:
   application:
     name: productservice
+  profiles:
+    active: local
 
   config:
     import: optional:file:.env[.properties]
@@ -14,20 +19,23 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
-        show_sql: true
+#        show_sql: true
     hibernate:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
-
-server:
-  port: 1111
+resilience4j:
+  circuitbreaker:
+    instances:
+      userServiceCircuitBreaker:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
 
 logging:
   level:
@@ -37,3 +45,27 @@ logging:
     org.springframework.security.web.authentication: DEBUG
     org.springframework.security.web.access.intercept.FilterSecurityInterceptor: DEBUG
     org.springframework.security.access.intercept.AbstractSecurityInterceptor: DEBUG
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "local"
+  cloud:
+    discovery:
+      client:
+        simple: false
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
+---
+spring:
+  config:
+    activate:
+      on-profile: "kubernetes"
+  cloud:
+    discovery:
+      client:
+        simple: true

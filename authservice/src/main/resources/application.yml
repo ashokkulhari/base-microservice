@@ -8,28 +8,20 @@ spring:
 
   config:
     import: optional:file:.env[.properties]
----
-spring:
-  config:
-    activate:
-      on-profile: "local"
-  cloud:
-    discovery:
-      client:
-        simple: false
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
----
-spring:
-  config:
-    activate:
-      on-profile: "kubernetes"
-  cloud:
-    discovery:
-      client:
-        simple: true
+
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userServiceCircuitBreaker:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
 
 
 logging:
@@ -43,3 +35,29 @@ logging:
     com.ic.authservice: DEBUG
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "local"
+  cloud:
+    discovery:
+      client:
+        simple: false
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761/eureka/}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "kubernetes"
+  cloud:
+    discovery:
+      client:
+        simple: true
+

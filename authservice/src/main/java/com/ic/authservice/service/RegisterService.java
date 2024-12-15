@@ -1,7 +1,7 @@
 package com.ic.authservice.service;
 
-import com.ic.authservice.model.User;
 import com.ic.authservice.request.RegisterRequest;
+import com.ic.common.models.User;
 
 /**
  * Service interface named {@link RegisterService} for user registration operations.

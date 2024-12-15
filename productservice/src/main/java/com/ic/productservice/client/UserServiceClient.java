@@ -1,6 +1,7 @@
 package com.ic.productservice.client;
 
 import com.ic.productservice.config.FeignClientConfig;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ public interface UserServiceClient {
      * @param token the token to validate
      */
     @PostMapping("/validate-token")
+    @CircuitBreaker(name = "userServiceCircuitBreaker", fallbackMethod = "validateTokenFallback")
     void validateToken(@RequestParam String token);
 
     /**
@@ -29,6 +31,17 @@ public interface UserServiceClient {
      * @return {@link UsernamePasswordAuthenticationToken} containing authentication details
      */
     @GetMapping("/authenticate")
+    @CircuitBreaker(name = "userServiceCircuitBreaker", fallbackMethod = "getAuthenticationFallback")
     UsernamePasswordAuthenticationToken getAuthentication(@RequestParam String token);
 
+
+    default void validateTokenFallback(String token, Throwable throwable) {
+        System.err.println("Fallback executed for validateToken: " + throwable.getMessage());
+        throw new RuntimeException("User Service is unavailable. Please try again later.");
+    }
+
+    default UsernamePasswordAuthenticationToken getAuthenticationFallback(String token, Throwable throwable) {
+        System.err.println("Fallback executed for getAuthentication: " + throwable.getMessage());
+        throw new RuntimeException("User Service is unavailable. Please try again later.");
+    }
 }

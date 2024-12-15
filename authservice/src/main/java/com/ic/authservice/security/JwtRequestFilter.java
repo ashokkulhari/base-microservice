@@ -2,7 +2,7 @@ package com.ic.authservice.security;
 
 
 import com.ic.authservice.client.UserServiceClient;
-import com.ic.authservice.model.Token;
+import com.ic.common.models.Token;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

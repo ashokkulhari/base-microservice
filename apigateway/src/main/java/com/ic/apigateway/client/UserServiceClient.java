@@ -1,5 +1,6 @@
 package com.ic.apigateway.client;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "userservice", path = "/api/v1/users")
 public interface UserServiceClient {
 
-    /**
-     * Validates the given token by making a POST request to the User Service.
-     *
-     * @param token the token to be validated
-     */
+
     @PostMapping("/validate-token")
+    @CircuitBreaker(name = "userServiceCircuitBreaker", fallbackMethod = "validateTokenFallback")
     void validateToken(@RequestParam String token);
+
+    default void validateTokenFallback(String token, Throwable throwable) {
+        System.err.println("Fallback executed for validateToken: " + throwable.getMessage());
+        throw new RuntimeException("User Service is unavailable. Please try again later.");
+    }
 
 }

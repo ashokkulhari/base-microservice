@@ -22,21 +22,92 @@ spring:
           uri: lb://productservice
           predicates:
             - Path=/api/v1/products/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: productservice
+                fallbackUri: forward:/fallback/product
 
         - id: catalogservice
           uri: lb://catalogservice
           predicates:
             - Path=/api/v1/catalogs/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: catalogservice
+                fallbackUri: forward:/fallback/catalog
 
         - id: authservice
           uri: lb://authservice
           predicates:
             - Path=/api/v1/authentication/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: authservice
+                fallbackUri: forward:/fallback/auth
 
         - id: userservice
           uri: lb://userservice
           predicates:
             - Path=/api/v1/users/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: userServiceCircuitBreaker
+                fallbackUri: forward:/fallback/user
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userServiceCircuitBreaker:
+        register-health-indicator: true
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+      productservice:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+      catalogservice:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.access.ExceptionTranslationFilter: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.authentication: DEBUG
+    org.springframework.security.web.access.intercept.FilterSecurityInterceptor: DEBUG
+    org.springframework.security.access.intercept.AbstractSecurityInterceptor: DEBUG
+    com.netflix.loadbalancer: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
+
+    com.ic.apigateway: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+
+
 ---
 spring:
   config:
@@ -60,17 +131,6 @@ spring:
       client:
         simple: true
 
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.web.access.ExceptionTranslationFilter: DEBUG
-    org.springframework.security.web.FilterChainProxy: DEBUG
-    org.springframework.security.web.authentication: DEBUG
-    org.springframework.security.web.access.intercept.FilterSecurityInterceptor: DEBUG
-    org.springframework.security.access.intercept.AbstractSecurityInterceptor: DEBUG
-    com.netflix.loadbalancer: DEBUG
-    org.springframework.cloud.openfeign: DEBUG
 
-    com.ic.apigateway: DEBUG
-  pattern:
-        level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+

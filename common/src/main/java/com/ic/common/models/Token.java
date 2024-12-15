@@ -1,4 +1,4 @@
-package com.ic.apigateway.model;
+package com.ic.common.models;
 
 import lombok.Builder;
 import lombok.Getter;

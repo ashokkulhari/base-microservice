@@ -1,9 +1,9 @@
 package com.ic.authservice.service.impl;
 
 import com.ic.authservice.client.UserServiceClient;
-import com.ic.authservice.model.User;
 import com.ic.authservice.request.RegisterRequest;
 import com.ic.authservice.service.RegisterService;
+import com.ic.common.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,6 @@ public class RegisterServiceImpl implements RegisterService {
      */
     @Override
     public User registerUser(RegisterRequest registerRequest) {
-        System.out.println("---service ---registerUser ---");
         return userServiceClient.register(registerRequest).getBody();
     }
 

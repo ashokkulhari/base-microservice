@@ -24,6 +24,19 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
 
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.access.ExceptionTranslationFilter: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.authentication: DEBUG
+    org.springframework.security.web.access.intercept.FilterSecurityInterceptor: DEBUG
+    org.springframework.security.access.intercept.AbstractSecurityInterceptor: DEBUG
+    com.ic.userservice: DEBUG
+  pattern:
+        level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
 ---
 spring:
   config:
@@ -46,17 +59,3 @@ spring:
     discovery:
       client:
         simple: true
-
-
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.web.access.ExceptionTranslationFilter: DEBUG
-    org.springframework.security.web.FilterChainProxy: DEBUG
-    org.springframework.security.web.authentication: DEBUG
-    org.springframework.security.web.access.intercept.FilterSecurityInterceptor: DEBUG
-    org.springframework.security.access.intercept.AbstractSecurityInterceptor: DEBUG
-    com.ic.userservice: DEBUG
-  pattern:
-        level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"

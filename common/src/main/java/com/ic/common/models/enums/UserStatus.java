@@ -1,4 +1,4 @@
-package com.ic.authservice.model.enums;
+package com.ic.common.models.enums;
 
 /**
  * Represents the status of a user.
